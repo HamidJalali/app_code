@@ -3,7 +3,7 @@ import os
 
 app = Flask(__name__)
 
-
+# Root endpoint
 @app.get("/")
 def home():
     return jsonify({
