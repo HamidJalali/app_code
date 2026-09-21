@@ -11,7 +11,7 @@ def home():
         "status": "running"
     })
 
-
+# health endpoint
 @app.get("/health")
 def health():
     return jsonify({"status": "healthy"}), 200
