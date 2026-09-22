@@ -19,7 +19,7 @@ pipeline {
 
     environment {
         REMOTE_HOST = 'learning.private.internal'
-        REMOTE_DIR = '/home/ubuntu/devops-case-study-practice/jenkins-checkout'
+        REMOTE_DIR = 'devops-case-study-practice/jenkins-checkout'
         REGISTRY = 'docker.io'
         IMAGE = 'hjcontainer/myapp'
     }
@@ -92,7 +92,7 @@ pipeline {
                             -o BatchMode=yes \
                             -o UserKnownHostsFile="$KNOWN_HOSTS" \
                             "${SSH_USER}@${REMOTE_HOST}" \
-                            "cd ${REMOTE_DIR} && \
+                            "cd /home/${SSH_USER}/${REMOTE_DIR} && \
                             docker build -t '${IMAGE}:${TAG}' -t '${IMAGE}:latest' ."
                     '''
                 }
