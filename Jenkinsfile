@@ -36,6 +36,25 @@ pipeline {
             }
         }
 
+        stage('Determine Image Version') {
+            steps {
+                script {
+                    def version = readFile('/workspace/jenkins-checkout/VERSION').trim()
+
+                    if (!version) {
+                        error('VERSION file is empty')
+                    }
+
+                    if (!(version ==~ /^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$/)) {
+                        error("Invalid version: ${version}")
+                    }
+
+                    env.IMAGE_TAG = "${version}"
+                    echo "Docker image IMAGE_TAG: ${env.IMAGE_TAG}"
+                }
+            }
+        }
+
         stage('Remote Docker Registry Login') {
             steps {
                 withCredentials([
@@ -84,15 +103,13 @@ pipeline {
                     sh '''
                         set -eu
 
-                        TAG="${BUILD_NUMBER}"
-
                         ssh \
                             -i "$SSH_KEY" \
                             -o BatchMode=yes \
                             -o UserKnownHostsFile="$KNOWN_HOSTS" \
                             "${SSH_USER}@${REMOTE_HOST}" \
                             "cd /home/${SSH_USER}/${REMOTE_DIR} && \
-                            docker build -t '${IMAGE}:${TAG}' -t '${IMAGE}:latest' ."
+                            docker build -t '${IMAGE}:${IMAGE_TAG}' -t '${IMAGE}:latest' ."
                     '''
                 }
             }
@@ -114,21 +131,19 @@ pipeline {
                     sh '''
                         set -eu
 
-                        TAG="${BUILD_NUMBER}"
+                        ssh \
+                            -i "$SSH_KEY" \
+                            -o BatchMode=yes \
+                            -o UserKnownHostsFile="$KNOWN_HOSTS" \
+                            "${SSH_USER}@${REMOTE_HOST}" \
+                            "/home/${SSH_USER}/.local/bin/trivy image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 '${IMAGE}:${IMAGE_TAG}'"
 
                         ssh \
                             -i "$SSH_KEY" \
                             -o BatchMode=yes \
                             -o UserKnownHostsFile="$KNOWN_HOSTS" \
                             "${SSH_USER}@${REMOTE_HOST}" \
-                            "/home/${SSH_USER}/.local/bin/trivy image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 '${IMAGE}:${TAG}'"
-
-                        ssh \
-                            -i "$SSH_KEY" \
-                            -o BatchMode=yes \
-                            -o UserKnownHostsFile="$KNOWN_HOSTS" \
-                            "${SSH_USER}@${REMOTE_HOST}" \
-                            "docker push '${IMAGE}:${TAG}' && docker push '${IMAGE}:latest'"
+                            "docker push '${IMAGE}:${IMAGE_TAG}' && docker push '${IMAGE}:latest'"
                     '''
                 }
             }
@@ -151,14 +166,12 @@ pipeline {
                     sh '''
                         set -eu
 
-                        TAG="${BUILD_NUMBER}"
-
                         ssh \
                             -i "$SSH_KEY" \
                             -o BatchMode=yes \
                             -o UserKnownHostsFile="$KNOWN_HOSTS" \
                             "${SSH_USER}@${REMOTE_HOST}" \
-                            "docker rmi '${IMAGE}:${TAG}' '${IMAGE}:latest' || true; docker logout docker.io || true"
+                            "docker rmi '${IMAGE}:${IMAGE_TAG}' '${IMAGE}:latest' || true"
                     '''
                 }
         }
