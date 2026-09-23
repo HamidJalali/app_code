@@ -158,7 +158,7 @@ pipeline {
                             -o BatchMode=yes \
                             -o UserKnownHostsFile="$KNOWN_HOSTS" \
                             "${SSH_USER}@${REMOTE_HOST}" \
-                            "docker rmi '${IMAGE}:${TAG}' '${IMAGE}:latest' || true"
+                            "docker rmi '${IMAGE}:${TAG}' '${IMAGE}:latest' || true; docker logout docker.io || true"
                     '''
                 }
         }
