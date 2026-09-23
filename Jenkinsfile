@@ -21,6 +21,7 @@ pipeline {
         REMOTE_DIR = 'devops-case-study-practice/jenkins-checkout'
         REGISTRY = 'docker.io'
         IMAGE = 'hjcontainer/myapp'
+        IMAGE_TAG = ''
     }
 
     stages {
