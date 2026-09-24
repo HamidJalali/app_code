@@ -185,20 +185,28 @@ pipeline {
                     sh '''
                         set -eu
                         
-                        printf '%s\n' "$DOCKER_CONFIG_SECRET_VALUE" |
                         ssh \
                             -i "$SSH_KEY" \
                             -o BatchMode=yes \
                             -o UserKnownHostsFile="$KNOWN_HOSTS" \
                             "${SSH_USER}@${REMOTE_HOST}" \
-                            "IFS= read -r DOCKER_CONFIG_SECRET_VALUE
-                            export DOCKER_CONFIG_SECRET_VALUE
-                            envsubst \
+                            "
+                            export DOCKER_CONFIG_SECRET_VALUE='${DOCKER_CONFIG_SECRET_VALUE}'
+
+                            export IMAGE_TAG='${IMAGE_TAG}'
+
+                            envsubst '${DOCKER_CONFIG_SECRET_VALUE}' \
                                 < /home/${SSH_USER}/${REMOTE_APP_CONFIG}/image-pull-secret.yaml |
-                            /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f - &&
-                            /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-deployment.yaml &&
-                            /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-service.yaml &&
-                            fuser -k 8081/tcp 2>/dev/null || true &&
+                            /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f -
+
+                            envsubst '${IMAGE_TAG}' \
+                                < /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-deployment.yaml |
+                            /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f -
+
+                            /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-service.yaml
+
+                            fuser -k 8081/tcp 2>/dev/null || true
+
                             nohup /home/${SSH_USER}/.local/bin/kubectl port-forward \
                             --namespace=demo \
                             --address=0.0.0.0 \
