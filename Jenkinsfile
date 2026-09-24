@@ -192,13 +192,19 @@ pipeline {
                             -o UserKnownHostsFile="$KNOWN_HOSTS" \
                             "${SSH_USER}@${REMOTE_HOST}" \
                             "IFS= read -r DOCKER_CONFIG_SECRET_VALUE
-                             export DOCKER_CONFIG_SECRET_VALUE
-                             envsubst \
-                                 < /home/${SSH_USER}/${REMOTE_APP_CONFIG}/image-pull-secret.yaml |
-                             /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f - &&
-                             /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-deployment.yaml &&
-                             /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-service.yaml &&
-                             ssh -N -L 0.0.0.0:8081:\$(minikube ip):30080 ${SSH_USER}@${REMOTE_HOST} &"
+                            export DOCKER_CONFIG_SECRET_VALUE
+                            envsubst \
+                                < /home/${SSH_USER}/${REMOTE_APP_CONFIG}/image-pull-secret.yaml |
+                            /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f - &&
+                            /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-deployment.yaml &&
+                            /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-service.yaml &&
+                            fuser -k 8081/tcp 2>/dev/null || true &&
+                            nohup /home/${SSH_USER}/.local/bin/kubectl port-forward \
+                            --namespace=demo \
+                            --address=0.0.0.0 \
+                            service/myapp-service \
+                            8081:8080 \
+                            >/dev/null 2>&1 </dev/null &
                     '''
                 }
             }
