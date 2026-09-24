@@ -191,15 +191,15 @@ pipeline {
                             -o UserKnownHostsFile="$KNOWN_HOSTS" \
                             "${SSH_USER}@${REMOTE_HOST}" \
                             "
-                            export DOCKER_CONFIG_SECRET_VALUE="${DOCKER_CONFIG_SECRET_VALUE}"
+                            export DOCKER_CONFIG_SECRET_VALUE='${DOCKER_CONFIG_SECRET_VALUE}'
 
-                            export IMAGE_TAG="${IMAGE_TAG}"
+                            export IMAGE_TAG='${IMAGE_TAG}'
 
-                            envsubst '${DOCKER_CONFIG_SECRET_VALUE}' \
+                            envsubst '\${DOCKER_CONFIG_SECRET_VALUE}' \
                                 < /home/${SSH_USER}/${REMOTE_APP_CONFIG}/image-pull-secret.yaml |
                             /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f -
 
-                            envsubst '${IMAGE_TAG}' \
+                            envsubst '\${IMAGE_TAG}' \
                                 < /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-deployment.yaml |
                             /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f -
 
