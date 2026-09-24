@@ -204,7 +204,7 @@ pipeline {
                             --address=0.0.0.0 \
                             service/myapp-service \
                             8081:8080 \
-                            >/dev/null 2>&1 </dev/null &
+                            >/dev/null 2>&1 </dev/null &"
                     '''
                 }
             }
