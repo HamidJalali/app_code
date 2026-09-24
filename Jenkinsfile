@@ -174,7 +174,7 @@ pipeline {
                     ),
                     string(
                         credentialsId: 'docker-config-secret',
-                        variable: 'DOCKER_CONFIG_SECRET'
+                        variable: 'DOCKER_CONFIG_SECRET_VALUE'
                     ),
 
                     file(
