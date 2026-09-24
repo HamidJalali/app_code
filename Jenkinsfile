@@ -223,7 +223,7 @@ pipeline {
                     '''
                     
                     dir('/jenkins-checkout') {
-                        cleanWs()
+                        cleanWs(deleteDirs: false)
                     }
                 }
         }
