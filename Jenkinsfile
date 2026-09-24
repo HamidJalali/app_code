@@ -184,13 +184,15 @@ pipeline {
                 ]) {
                     sh '''
                         set -eu
-
+                        
+                        envsubst '${DOCKER_CONFIG_SECRET_VALUE}' \
+                            < /jenkins-checkout/app_config/image-pull-secret.yaml |
                         ssh \
                             -i "$SSH_KEY" \
                             -o BatchMode=yes \
                             -o UserKnownHostsFile="$KNOWN_HOSTS" \
                             "${SSH_USER}@${REMOTE_HOST}" \
-                            "envsubst '${DOCKER_CONFIG_SECRET_VALUE}' < /home/${SSH_USER}/${REMOTE_APP_CONFIG}/image-pull-secret.yaml | /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f -"
+                            "/home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f -"
                     '''
                 }
             }
