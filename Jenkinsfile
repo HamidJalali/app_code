@@ -185,7 +185,7 @@ pipeline {
                     sh '''
                         set -eu
                         
-                        printf '%s\n' "$DOCKER_CONFIG_SECRET_VALUE" |
+                        printf '%s\n' "${DOCKER_CONFIG_SECRET_VALUE}" |
                         ssh \
                             -i "$SSH_KEY" \
                             -o BatchMode=yes \
