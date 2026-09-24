@@ -204,6 +204,7 @@ pipeline {
                         variable: 'KNOWN_HOSTS'
                     )
                 ]) {
+                    
                     sh '''
                         set -eu
 
@@ -214,6 +215,10 @@ pipeline {
                             "${SSH_USER}@${REMOTE_HOST}" \
                             "docker rmi '${IMAGE}:${IMAGE_TAG}' '${IMAGE}:latest' || true"
                     '''
+                    
+                    dir('/workspace/jenkins-checkout') {
+                        cleanWs()
+                    }
                 }
         }
     }
