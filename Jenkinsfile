@@ -223,7 +223,7 @@ pipeline {
                     '''
                     
                     dir('/jenkins-checkout') {
-                        sh 'rm -rf ./* ./.* 2>/dev/null || true'
+                        cleanWs()
                     }
                 }
         }
