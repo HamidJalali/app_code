@@ -191,9 +191,9 @@ pipeline {
                             -o UserKnownHostsFile="$KNOWN_HOSTS" \
                             "${SSH_USER}@${REMOTE_HOST}" \
                             "
-                            export DOCKER_CONFIG_SECRET_VALUE='${DOCKER_CONFIG_SECRET_VALUE}'
+                            export DOCKER_CONFIG_SECRET_VALUE="${DOCKER_CONFIG_SECRET_VALUE}"
 
-                            export IMAGE_TAG='${IMAGE_TAG}'
+                            export IMAGE_TAG="${IMAGE_TAG}"
 
                             envsubst '${DOCKER_CONFIG_SECRET_VALUE}' \
                                 < /home/${SSH_USER}/${REMOTE_APP_CONFIG}/image-pull-secret.yaml |
