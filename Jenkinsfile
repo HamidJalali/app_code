@@ -198,7 +198,7 @@ pipeline {
                              /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f - &&
                              /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-deployment.yaml &&
                              /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-service.yaml &&
-                             ssh -N -L 0.0.0.0:8081:$(minikube ip):30080 ${SSH_USER}@${REMOTE_HOST} &"
+                             ssh -N -L 0.0.0.0:8081:\$(minikube ip):30080 ${SSH_USER}@${REMOTE_HOST} &"
                     '''
                 }
             }
