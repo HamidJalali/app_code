@@ -206,8 +206,6 @@ pipeline {
                                 < /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-deployment.yaml |
                             /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f -
 
-                            /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f -
-
                             /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-service.yaml
                             
                             fuser -k 8081/tcp 2>/dev/null || true
