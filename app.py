@@ -7,7 +7,7 @@ app = Flask(__name__)
 @app.get("/")
 def home():
     return jsonify({
-        "message": "Hello from the Python web app! nice addition at 21:14!",
+        "message": "Hello from the Python web app! nice addition at 21:18!",
         "status": "running"
     })
 
