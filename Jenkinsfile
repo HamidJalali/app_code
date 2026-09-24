@@ -41,7 +41,7 @@ pipeline {
         stage('Determine Image Version') {
             steps {
                 script {
-                    def version = readFile('/workspace/jenkins-checkout/VERSION').trim()
+                    def version = readFile('/workspace/jenkins-checkout/app_code/VERSION').trim()
 
                     if (!version) {
                         error('VERSION file is empty')
