@@ -210,7 +210,7 @@ pipeline {
                             
                             fuser -k 8081/tcp 2>/dev/null || true
 
-                            sleep 20
+                            sleep 25
 
                             nohup /home/${SSH_USER}/.local/bin/kubectl port-forward \
                             --namespace=demo \
