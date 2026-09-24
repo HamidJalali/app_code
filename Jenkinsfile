@@ -196,7 +196,8 @@ pipeline {
                              envsubst \
                                  < /home/${SSH_USER}/${REMOTE_APP_CONFIG}/image-pull-secret.yaml |
                              /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f - &&
-                             /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-deployment.yaml"
+                             /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-deployment.yaml &&
+                             /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f /home/${SSH_USER}/${REMOTE_APP_CONFIG}/myapp-service.yaml"
                     '''
                 }
             }
