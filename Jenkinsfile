@@ -175,6 +175,11 @@ pipeline {
                     string(
                         credentialsId: 'docker-config-secret',
                         variable: 'DOCKER_CONFIG_SECRET'
+                    ),
+
+                    file(
+                        credentialsId: 'private-known-hosts',
+                        variable: 'KNOWN_HOSTS'
                     )
                 ]) {
                     sh '''
