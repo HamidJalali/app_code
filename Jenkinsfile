@@ -185,7 +185,7 @@ pipeline {
                     sh '''
                         set -eu
                         
-                        printf '%s\n' "${DOCKER_CONFIG_SECRET_VALUE}" |
+                        printf '%s\\n' "$DOCKER_CONFIG_SECRET_VALUE" |
                         ssh \
                             -i "$SSH_KEY" \
                             -o BatchMode=yes \
@@ -193,8 +193,7 @@ pipeline {
                             "${SSH_USER}@${REMOTE_HOST}" \
                             "IFS= read -r DOCKER_CONFIG_SECRET_VALUE
                              export DOCKER_CONFIG_SECRET_VALUE
-                             echo $DOCKER_CONFIG_SECRET_VALUE
-                             envsubst '\${DOCKER_CONFIG_SECRET_VALUE}' \
+                             envsubst \
                                  < /home/${SSH_USER}/${REMOTE_APP_CONFIG}/image-pull-secret.yaml |
                              /home/${SSH_USER}/.local/bin/kubectl apply --namespace=demo -f -"
                     '''
