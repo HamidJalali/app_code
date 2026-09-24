@@ -216,7 +216,7 @@ pipeline {
                             "docker rmi '${IMAGE}:${IMAGE_TAG}' '${IMAGE}:latest' || true"
                     '''
                     
-                    dir('/workspace/jenkins-checkout') {
+                    dir('/jenkins-checkout') {
                         cleanWs()
                     }
                 }
