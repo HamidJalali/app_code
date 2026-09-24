@@ -18,15 +18,17 @@ pipeline {
 
     environment {
         REMOTE_HOST = 'learning.private.internal'
-        REMOTE_DIR = 'devops-case-study-practice/jenkins-checkout'
+        REMOTE_APP_DIR = 'devops-case-study-practice/jenkins-checkout/app_code'
+        REMOTE_APP_CONFIG = 'devops-case-study-practice/jenkins-checkout/app_config'
         REGISTRY = 'docker.io'
         IMAGE = 'hjcontainer/myapp'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout app_code') {
             steps {
-                dir('/workspace/jenkins-checkout') {
+                // Inside the jenkins container
+                dir('/jenkins-checkout/app_code') {
                     git(
                         branch: 'main',
                         credentialsId: 'ssh-private-key',
@@ -108,7 +110,7 @@ pipeline {
                             -o BatchMode=yes \
                             -o UserKnownHostsFile="$KNOWN_HOSTS" \
                             "${SSH_USER}@${REMOTE_HOST}" \
-                            "cd /home/${SSH_USER}/${REMOTE_DIR} && \
+                            "cd /home/${SSH_USER}/${REMOTE_APP_DIR} && \
                             docker build -t '${IMAGE}:${IMAGE_TAG}' -t '${IMAGE}:latest' ."
                     '''
                 }
@@ -144,6 +146,45 @@ pipeline {
                             -o UserKnownHostsFile="$KNOWN_HOSTS" \
                             "${SSH_USER}@${REMOTE_HOST}" \
                             "docker push '${IMAGE}:${IMAGE_TAG}' && docker push '${IMAGE}:latest'"
+                    '''
+                }
+            }
+        }
+
+        stage('Checkout app_config') {
+            steps {
+                // Inside the jenkins container
+                dir('/jenkins-checkout/app_config') {
+                    git(
+                        branch: 'main',
+                        credentialsId: 'ssh-private-key',
+                        url: 'git@github.com:HamidJalali/app_config.git'
+                    )
+                }
+            }
+        }
+
+        stage('Deploy to minikube cluster') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'ssh-private-key',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    ),
+                    string(
+                        credentialsId: 'docker-config-secret',
+                        variable: 'DOCKER_CONFIG_SECRET'
+                    )
+                ]) {
+                    sh '''
+                        set -eu
+
+                        ssh \
+                            -i "$SSH_KEY" \
+                            -o BatchMode=yes \
+                            -o UserKnownHostsFile="$KNOWN_HOSTS" \
+                            "envsubst '${DOCKER_CONFIG_SECRET_VALUE}' < /home/${SSH_USER}/${REMOTE_APP_CONFIG}/image-pull-secret.yaml | kubectl apply -f --namespace=demo -"
                     '''
                 }
             }
