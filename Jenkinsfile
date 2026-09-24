@@ -247,12 +247,8 @@ pipeline {
                             "docker rmi '${IMAGE}:${IMAGE_TAG}' '${IMAGE}:latest' || true"
                     '''
                     
-                    dir('/jenkins-checkout/app_code') {
-                        cleanWs()
-                    }
-                    
-                    dir('/jenkins-checkout/app_config') {
-                        cleanWs()
+                    dir('/jenkins-checkout') {
+                        cleanWs(deleteDirs: true)
                     }
                 }
         }
